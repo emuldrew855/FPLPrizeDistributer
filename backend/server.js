@@ -3,17 +3,21 @@ const cors = require("cors");
 const axios = require("axios");
 const app = express();
 
+const fplHost = "https://fantasy.premierleague.com/api/";
+
 app.use(
   cors({
     origin: "*",
-  })
+  }),
+  express.json()
 );
 
-app.get("/getLeague", function (_req, res) {
+app.post("/setupLeague", (req, res) => {
+  console.log("Setup league endpoint hit");
+  const { leagueId } = req.body;
   const config = {
     method: "get",
-    url: "https://fantasy.premierleague.com/api/leagues-classic/838035/standings",
-    headers: {},
+    url: `${fplHost}leagues-classic/${leagueId}/standings`,
   };
 
   axios(config)
