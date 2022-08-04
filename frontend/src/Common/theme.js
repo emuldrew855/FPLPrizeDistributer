@@ -1,5 +1,6 @@
-import { TextField } from "@mui/material";
+import { TableRow, TextField } from "@mui/material";
 import { createTheme, styled } from "@mui/material/styles";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 
 export const themeButton = createTheme({
   palette: {
@@ -71,3 +72,23 @@ export const ValidationTextField = styled(TextField)({
     color: "white",
   },
 });
+
+export const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "#49d09e",
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 16,
+  },
+}));
+
+export const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));

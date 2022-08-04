@@ -1,28 +1,18 @@
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import { ThemeProvider } from "@mui/material/styles";
-import { themeButton, style, ValidationTextField } from "../theme";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import axios from "axios";
+import { themeButton, style, ValidationTextField } from "../Common/theme";
+import PrizeSelector from "./PrizeSelection";
 
 export default function Main() {
   const [open, setOpen] = useState(false);
   const openModal = () => setOpen(true);
   const closeModal = () => setOpen(false);
+  const [leagueId, setValue] = useState(838035);
   const handleChange = (e) => setValue(e.target.value);
-  const [leagueId, setValue] = React.useState("838035");
-  function setUpLeague() {
-    console.log(`LeagueId: ${leagueId}`);
-    // Perform league id validation
-    if (leagueId === "" || leagueId === undefined) {
-      window.alert("Invalid league id");
-    } else {
-      //  Create post request to database
-      window.location = `http://localhost:3001/league/${leagueId}`;
-    }
-  }
   return (
     <>
       <h1> Fantasy Football Prize Distributer</h1>
@@ -66,18 +56,7 @@ export default function Main() {
             onChange={handleChange}
             helperText="Please input your league id"
           />
-          <h2> How many prizes should there be? </h2>
-          <br></br>
-          <ThemeProvider theme={themeButton}>
-            <Button
-              color="primary"
-              className="btn"
-              variant="contained"
-              onClick={setUpLeague}
-            >
-              Submit
-            </Button>
-          </ThemeProvider>
+          <PrizeSelector leagueId={leagueId} />
         </Box>
       </Modal>
     </>

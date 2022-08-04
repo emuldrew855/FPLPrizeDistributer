@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
-import { useParams } from "react-router-dom";
-import { ThemeProvider, styled } from "@mui/material/styles";
-import { themeButton, style, ValidationTextField } from "../theme";
-import axios from "axios";
+import { ThemeProvider } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
@@ -13,49 +10,37 @@ import Paper from "@mui/material/Paper";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import TextField from "@mui/material/TextField";
+import {
+  themeButton,
+  style,
+  ValidationTextField,
+  StyledTableCell,
+  StyledTableRow,
+} from "../Common/theme";
+import axios from "axios";
+import { host } from "../Common/util";
 
-const host = "http://localhost:8080/";
-let rows = [];
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: "#49d09e",
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 16,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+let rows,
+  prizes = [];
 
 export default function League() {
-  const totalPrize = 100,
-    firstPrize = 60,
-    secondPrize = 20,
-    thirdPrize = 20;
+  const totalPrize = 100;
   const [open, setOpen] = useState(false);
   const openModal = () => setOpen(true);
   const closeModal = () => setOpen(false);
-  const { leagueId } = useParams();
-  const [leagueData, setLeagueData] = useState([]);
+  const str = window.location.href;
+  const leagueId = str.substring(str.lastIndexOf("/") + 1, str.length);
+  const [leagueData, getLeagueData] = useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
   function saveChanges() {
     console.log("Changes saved!");
   }
+
   useEffect(() => {
     const data = JSON.stringify({ leagueId });
     const config = {
       method: "post",
-      url: `${host}setupLeague`,
+      url: `${host}retrieveLeague`,
       headers: {
         "Content-Type": "application/json",
       },
@@ -63,8 +48,8 @@ export default function League() {
     };
     axios(config)
       .then(function (res) {
-        setLeagueData(res.data);
-        rows = leagueData.new_entries.results.map(
+        getLeagueData(res.data);
+        rows = res.data.new_entries.results.map(
           ({ entry_name, player_first_name, player_last_name }) => {
             return {
               teamName: entry_name,
@@ -72,12 +57,17 @@ export default function League() {
             };
           }
         );
+        prizes = res.data?.prizes;
+        setIsLoading(false);
       })
       .catch(function (error) {
+        setIsLoading(false);
         console.log(`Error: ${error}`);
       });
-  });
-  return (
+  }, []);
+  return isLoading ? (
+    "loading"
+  ) : (
     <>
       <div>
         <h1> League: {leagueData?.league?.name}</h1>
@@ -103,47 +93,24 @@ export default function League() {
             </Typography>
             <br></br>
             <h3> Total Prize Money: £{totalPrize}</h3>
-            <ValidationTextField
-              label="Required"
-              required
-              variant="standard"
-              defaultValue="Success"
-              id="validation-outlined-input"
-              value={`${firstPrize}%`}
-              sx={{
-                input: { color: "white" },
-              }}
-              helperText="Provide 1st prize with a %"
-            />
-            £{totalPrize * (firstPrize / 100)}
-            <br></br>
-            <ValidationTextField
-              label="Required"
-              required
-              variant="standard"
-              defaultValue="Success"
-              id="validation-outlined-input"
-              value={`${secondPrize}%`}
-              sx={{
-                input: { color: "white" },
-              }}
-              helperText="Provide 2nd prize prize with a %"
-            />
-            £{totalPrize * (secondPrize / 100)}
-            <br></br>
-            <ValidationTextField
-              label="Required"
-              required
-              variant="standard"
-              defaultValue="Success"
-              id="validation-outlined-input"
-              value={`${thirdPrize}%`}
-              sx={{
-                input: { color: "white" },
-              }}
-              helperText="Provide 3rd prize prize with a %"
-            />
-            £{totalPrize * (thirdPrize / 100)}
+            {prizes.map((prize) => (
+              <>
+                <ValidationTextField
+                  label="Required"
+                  required
+                  variant="standard"
+                  defaultValue="Success"
+                  id="validation-outlined-input"
+                  value={`${prize.prize}`}
+                  sx={{
+                    input: { color: "white" },
+                  }}
+                  helperText="Provide 1st prize with a %"
+                />
+                £{totalPrize * (prize.prize / 100)}
+                <br></br>
+              </>
+            ))}
             <br></br>
             <ThemeProvider theme={themeButton}>
               <Button

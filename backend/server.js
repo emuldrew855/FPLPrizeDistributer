@@ -11,22 +11,28 @@ app.use(
   }),
   express.json()
 );
+let prizeData = {};
 
-app.post("/setupLeague", (req, res) => {
-  console.log("Setup league endpoint hit");
+app.post("/setUpLeague", (req, res) => {
+  console.log("/setUpLeague endpoint hit");
+  const { prizes } = req.body;
+  prizeData = { prizes };
+  res.send("Retrieve League endpoint hit");
+});
+
+app.post("/retrieveLeague", (req, res) => {
+  console.log("/retrieveLeague endpoint hit");
   const { leagueId } = req.body;
   const config = {
     method: "get",
     url: `${fplHost}leagues-classic/${leagueId}/standings`,
   };
-
   axios(config)
     .then(function (response) {
-      console.log(JSON.stringify(response.data));
-      res.send(JSON.stringify(response.data));
+      const leagueData = { ...response.data, ...prizeData };
+      res.send(JSON.stringify(leagueData));
     })
     .catch(function (error) {
-      console.log(error);
       res.send(error);
     });
 });
