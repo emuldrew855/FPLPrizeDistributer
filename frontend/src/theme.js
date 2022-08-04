@@ -1,4 +1,5 @@
-import { createTheme } from "@mui/material/styles";
+import { TextField } from "@mui/material";
+import { createTheme, styled } from "@mui/material/styles";
 
 export const themeButton = createTheme({
   palette: {
@@ -24,3 +25,49 @@ export const style = {
   boxShadow: 24,
   p: 4,
 };
+
+export const ValidationTextField = styled(TextField)({
+  "& input:valid + fieldset": {
+    borderColor: "white",
+    borderWidth: 2,
+  },
+  "& input:invalid + fieldset": {
+    borderColor: "white",
+    borderWidth: 2,
+  },
+  "& input:valid:focus + fieldset": {
+    borderLeftWidth: 6,
+    padding: "4px !important", // override inline-style
+  },
+  "& label.Mui-focused": {
+    color: "white",
+  },
+  "& .MuiInput-underline:after": {
+    borderBottomColor: "white",
+  },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "red",
+    },
+    "&:hover fieldset": {
+      borderColor: "#05fb86",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#31e9a5",
+    },
+  },
+  // MuiFormControl-root-MuiTextField-root
+  "& .MuiFormControl-root": {
+    "& .MuiTextField-root": {
+      "& .MuiFormHelperText-root": {
+        color: "white",
+      },
+    },
+  },
+  "& .MuiFormHelperText-root": {
+    color: "white",
+  },
+  "& .MuiFormLabel": {
+    color: "white",
+  },
+});

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import { ThemeProvider } from "@mui/material/styles";
-import { themeButton, style } from "../theme";
+import { themeButton, style, ValidationTextField } from "../theme";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
+import axios from "axios";
 
 export default function Main() {
   const [open, setOpen] = useState(false);
@@ -16,7 +16,12 @@ export default function Main() {
   function setUpLeague() {
     console.log(`LeagueId: ${leagueId}`);
     // Perform league id validation
-    window.location = `http://localhost:3001/league/${leagueId}`;
+    if (leagueId === "" || leagueId === undefined) {
+      window.alert("Invalid league id");
+    } else {
+      //  Create post request to database
+      window.location = `http://localhost:3001/league/${leagueId}`;
+    }
   }
   return (
     <>
@@ -47,15 +52,21 @@ export default function Main() {
           <Typography id="modal-modal-title" variant="h3" component="h2">
             Input league details
           </Typography>
-          <TextField
-            required
-            id="standard-required"
-            variant="standard"
+          <br></br>
+          <ValidationTextField
             label="Required"
+            required
+            variant="outlined"
+            defaultValue="Success"
+            id="validation-outlined-input"
             value={leagueId}
+            sx={{
+              input: { color: "white" },
+            }}
             onChange={handleChange}
             helperText="Please input your league id"
           />
+          <h2> How many prizes should there be? </h2>
           <br></br>
           <ThemeProvider theme={themeButton}>
             <Button
