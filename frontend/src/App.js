@@ -5,6 +5,7 @@ import Footer from "./Footer/Footer";
 import League from "./League/League";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Main from "./Main/Main";
+import Profile from "./Profile/Profile";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Routes>
               <Route exact path="/" element={<Main />} />
               <Route path="league/:leagueId" element={<League />} />
+              <Route path="profile/:profileId" element={<Profile />} />
             </Routes>
           </Router>
         </header>

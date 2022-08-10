@@ -6,7 +6,6 @@ import Button from "@mui/material/Button";
 import { Modal, ThemeProvider, Typography } from "@mui/material";
 import { style, themeButton } from "../Common/theme";
 import LogIn from "../SignIn/LogIn";
-import Logout from "../SignIn/Logout";
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
@@ -42,7 +41,6 @@ export default function NavBar() {
           </Typography>
           <br></br>
           <LogIn />
-          <Logout />
           <ThemeProvider theme={themeButton}>
             <Button
               color="primary"
