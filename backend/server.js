@@ -41,14 +41,15 @@ app.post("/retrieveLeague", (req, res) => {
       const leagueName = response.data.league.name;
       console.log(`League Name: ${leagueName}`);
       const leagueData = { ...response.data, ...prizeData };
-      connection.connect();
-      connection.query(
-        `INSERT INTO \`league\` (\`id\`, \`name\`) VALUES ('${leagueId}', '${leagueName}');`,
-        function (error, results) {
-          if (error) console.log(error);
-          console.log(`DB Results ${JSON.stringify(results)}`);
-        }
-      );
+      console.log(`League Data: ${JSON.stringify(leagueData)}`);
+      // connection.connect();
+      // connection.query(
+      //   `INSERT INTO \`league\` (\`id\`, \`name\`) VALUES ('${leagueId}', '${leagueName}');`,
+      //   function (error, results) {
+      //     if (error) console.log(error);
+      //     console.log(`DB Results ${JSON.stringify(results)}`);
+      //   }
+      // );
       res.send(JSON.stringify(leagueData));
     })
     .catch(function (error) {

@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { themeButton, style, ValidationTextField } from "../Common/theme";
-import PrizeSelector from "./PrizeSelection";
+import { PrizeSelection as PrizeSelector } from "./PrizeSelection";
 
 export default function Main() {
   const [open, setOpen] = useState(false);
@@ -56,7 +56,12 @@ export default function Main() {
             onChange={handleChange}
             helperText="Please input your league id"
           />
-          <PrizeSelector leagueId={leagueId} />
+          <h3>Add number of prizes</h3>
+          <PrizeSelector
+            leagueId={leagueId}
+            prizes={[{ id: 0, prize: 0 }]}
+            modify={false}
+          />
         </Box>
       </Modal>
     </>

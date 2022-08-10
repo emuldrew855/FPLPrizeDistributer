@@ -9,9 +9,13 @@ import { host } from "../Common/util";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
-export default function PrizeSelection(props) {
+export function PrizeSelection(props) {
   const leagueId = props.leagueId;
-  const [inputFields, setInputFields] = useState([{ id: uuidv4(), prize: "" }]);
+  const [inputFields, setInputFields] = useState(
+    props.prizes.map((prize) => {
+      return { id: uuidv4(), prize: prize.prize };
+    })
+  );
 
   const handleChangeInput = (id, event) => {
     const newInputFields = inputFields.map((i) => {
@@ -36,6 +40,25 @@ export default function PrizeSelection(props) {
     setInputFields(values);
   };
 
+  function setUpLeague() {
+    const data = JSON.stringify({ leagueId, prizes: inputFields });
+    const config = {
+      method: "post",
+      url: `${host}setupLeague`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+    axios(config)
+      .then(function (res) {
+        console.log(`Response success: ${res}`);
+      })
+      .catch(function (error) {
+        console.log(`Error: ${error}`);
+      });
+  }
+
   function submit() {
     console.log("Submitting league info");
     // Perform league id validation
@@ -43,43 +66,32 @@ export default function PrizeSelection(props) {
       window.alert("Invalid league id");
     } else {
       //  Create post request to database
-      const data = JSON.stringify({ leagueId, prizes: inputFields });
-      const config = {
-        method: "post",
-        url: `${host}setupLeague`,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: data,
-      };
-      axios(config)
-        .then(function (res) {
-          console.log(`Response success: ${res}`);
-        })
-        .catch(function (error) {
-          console.log(`Error: ${error}`);
-        });
+      setUpLeague();
       window.location = `http://localhost:3001/league/${leagueId}`;
     }
   }
 
+  function modifyPrize() {
+    console.log("Modify prize");
+    setUpLeague();
+    window.location = `http://localhost:3001/league/${leagueId}`;
+  }
+
   return (
     <>
-      <h2>Add number of prizes</h2>
       {inputFields.map((inputField) => (
         <>
           <div key={inputField.id}>
             <ValidationTextField
               required
               name="prize"
-              label="Required"
               variant="outlined"
               id="validation-outlined-input"
               style={{ marginRight: "3%" }}
               sx={{
                 input: { color: "white" },
               }}
-              value={inputField.firstName}
+              value={inputField.prize}
               onChange={(event) => handleChangeInput(inputField.id, event)}
               helperText="Please input your first prize"
             />
@@ -96,14 +108,25 @@ export default function PrizeSelection(props) {
         </>
       ))}
       <ThemeProvider theme={themeButton}>
-        <Button
-          color="primary"
-          className="btn"
-          variant="contained"
-          onClick={submit}
-        >
-          Submit
-        </Button>
+        {props.modify ? (
+          <Button
+            color="primary"
+            className="btn"
+            variant="contained"
+            onClick={modifyPrize}
+          >
+            Save Changes
+          </Button>
+        ) : (
+          <Button
+            color="primary"
+            className="btn"
+            variant="contained"
+            onClick={submit}
+          >
+            Submit
+          </Button>
+        )}
       </ThemeProvider>
     </>
   );

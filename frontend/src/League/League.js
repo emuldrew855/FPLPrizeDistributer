@@ -13,12 +13,12 @@ import Typography from "@mui/material/Typography";
 import {
   themeButton,
   style,
-  ValidationTextField,
   StyledTableCell,
   StyledTableRow,
 } from "../Common/theme";
 import axios from "axios";
 import { host } from "../Common/util";
+import { PrizeSelection } from "../Main/PrizeSelection";
 
 let rows,
   prizes = [];
@@ -30,6 +30,7 @@ export default function League() {
   const closeModal = () => setOpen(false);
   const str = window.location.href;
   const leagueId = str.substring(str.lastIndexOf("/") + 1, str.length);
+  const leagueLink = `https://fantasy.premierleague.com/leagues/${leagueId}/standings/c`;
   const [leagueData, getLeagueData] = useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
   function saveChanges() {
@@ -49,15 +50,20 @@ export default function League() {
     axios(config)
       .then(function (res) {
         getLeagueData(res.data);
-        rows = res.data.new_entries.results.map(
-          ({ entry_name, player_first_name, player_last_name }) => {
+        prizes = res.data?.prizes;
+        console.log(`Prizes: ${JSON.stringify(prizes)}`);
+        rows = res.data.standings.results.map(
+          ({ entry_name, player_name, event_total, entry }, i) => {
             return {
               teamName: entry_name,
-              playerName: `${player_first_name} ${player_last_name}`,
+              playerName: player_name,
+              points: event_total,
+              prize: prizes[i] === undefined ? 0 : prizes[i].prize,
+              entry: `https://fantasy.premierleague.com/entry/${entry}/event/1`,
             };
           }
         );
-        prizes = res.data?.prizes;
+        console.log(`Rows: ${JSON.stringify(rows)}`);
         setIsLoading(false);
       })
       .catch(function (error) {
@@ -70,7 +76,13 @@ export default function League() {
   ) : (
     <>
       <div>
-        <h1> League: {leagueData?.league?.name}</h1>
+        <h1>
+          {" "}
+          League:{" "}
+          <a href={leagueLink} target="_blank">
+            {leagueData?.league?.name}{" "}
+          </a>
+        </h1>
         <ThemeProvider theme={themeButton}>
           <Button
             color="primary"
@@ -93,46 +105,13 @@ export default function League() {
             </Typography>
             <br></br>
             <h3> Total Prize Money: £{totalPrize}</h3>
-            {prizes.map((prize) => (
-              <>
-                <ValidationTextField
-                  label="Required"
-                  required
-                  variant="standard"
-                  defaultValue="Success"
-                  id="validation-outlined-input"
-                  value={`${prize.prize}`}
-                  sx={{
-                    input: { color: "white" },
-                  }}
-                  helperText="Provide 1st prize with a %"
-                />
-                £{totalPrize * (prize.prize / 100)}
-                <br></br>
-              </>
-            ))}
             <br></br>
-            <ThemeProvider theme={themeButton}>
-              <Button
-                style={{ marginRight: "3%" }}
-                color="primary"
-                className="btn"
-                variant="contained"
-                onClick={saveChanges}
-              >
-                Save Changes
-              </Button>
-            </ThemeProvider>
-            <ThemeProvider theme={themeButton}>
-              <Button
-                color="primary"
-                className="btn"
-                variant="contained"
-                onClick={closeModal}
-              >
-                Cancel
-              </Button>
-            </ThemeProvider>
+            <h3>Modify number of prizes</h3>
+            <PrizeSelection
+              leagueId={leagueId}
+              prizes={prizes}
+              modify={true}
+            ></PrizeSelection>
           </Box>
         </Modal>
         <br></br>
@@ -158,13 +137,15 @@ export default function League() {
                     {row.playerName}
                   </StyledTableCell>
                   <StyledTableCell component="th" scope="row">
-                    {row.teamName}
+                    <a href={row.entry} target="_blank">
+                      {row.teamName}
+                    </a>
                   </StyledTableCell>
                   <StyledTableCell component="th" scope="row">
-                    0
+                    {row.points}
                   </StyledTableCell>
                   <StyledTableCell component="th" scope="row">
-                    £0
+                    £{totalPrize * (row.prize / 100)}
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
