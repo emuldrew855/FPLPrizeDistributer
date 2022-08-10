@@ -5,7 +5,8 @@ const mysql = require("mysql2");
 const app = express();
 
 const fplHost = "https://fantasy.premierleague.com/api/";
-let prizeData = {};
+let prizeData,
+  user = {};
 
 app.use(
   cors({
@@ -19,6 +20,19 @@ const connection = mysql.createConnection(
 
 app.get("/", (_req, res) => {
   res.send("FPL prize distribution server");
+});
+
+app.post("/addUser", (req, res) => {
+  console.log("/addUser endpoint hit");
+  user = req.body;
+  console.log(`User: ${JSON.stringify(user)}`);
+  res.send("/addUser endpoint hit");
+});
+
+app.get("/getUser", (_req, res) => {
+  console.log("/getUser endpoint hit");
+
+  res.send(JSON.stringify(user));
 });
 
 app.post("/setUpLeague", (req, res) => {

@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import { useScript } from "./useScript";
 import jwt_deocde from "jwt-decode";
+import axios from "axios";
+import { host } from "../Common/util";
 
 export default function LogIn() {
   const googlebuttonref = useRef();
@@ -8,10 +10,27 @@ export default function LogIn() {
   const onGoogleSignIn = (user) => {
     let userCred = user.credential;
     let payload = jwt_deocde(userCred);
+    const data = JSON.stringify({ user: payload });
+    const config = {
+      method: "post",
+      url: `${host}addUser`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+    axios(config)
+      .then(function (res) {
+        console.log(`Response success: ${res}`);
+      })
+      .catch(function (error) {
+        console.log(`Error: ${error}`);
+      });
     console.log(payload);
     setuser(payload);
-    window.location = `http://localhost:3001/profile/${payload.jti}`;
+    window.location = `http://localhost:3001/profile/${payload.sub}`;
   };
+
   useScript("https://accounts.google.com/gsi/client", () => {
     window.google.accounts.id.initialize({
       client_id:

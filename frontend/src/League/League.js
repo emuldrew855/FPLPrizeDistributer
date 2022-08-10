@@ -32,10 +32,7 @@ export default function League() {
   const leagueId = str.substring(str.lastIndexOf("/") + 1, str.length);
   const leagueLink = `https://fantasy.premierleague.com/leagues/${leagueId}/standings/c`;
   const [leagueData, getLeagueData] = useState([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-  function saveChanges() {
-    console.log("Changes saved!");
-  }
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const data = JSON.stringify({ leagueId });
@@ -51,7 +48,6 @@ export default function League() {
       .then(function (res) {
         getLeagueData(res.data);
         prizes = res.data?.prizes;
-        console.log(`Prizes: ${JSON.stringify(prizes)}`);
         rows = res.data.standings.results.map(
           ({ entry_name, player_name, event_total, entry }, i) => {
             return {
@@ -63,7 +59,6 @@ export default function League() {
             };
           }
         );
-        console.log(`Rows: ${JSON.stringify(rows)}`);
         setIsLoading(false);
       })
       .catch(function (error) {
